@@ -1,4 +1,3 @@
-Python
 #!/usr/bin/env python3
 # rpi_ws281x library strandtest example
 # Author: Tony DiCola (tony@tonydicola.com)
