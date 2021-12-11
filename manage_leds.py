@@ -1,8 +1,10 @@
-# manage_leds.py
-# Author: Dante Sivo
+Python
+#!/usr/bin/env python3
+# rpi_ws281x library strandtest example
+# Author: Tony DiCola (tony@tonydicola.com)
 #
-# Credit to Tony DiCola (tony@tonydicola.com) for demo file.
-#
+# Direct port of the Arduino NeoPixel library strandtest example.  Showcases
+# various animations on a strip of NeoPixels.
  
 import time
 from rpi_ws281x import *
@@ -79,10 +81,19 @@ def theaterChaseRainbow(strip, wait_ms=50):
  
 # Main program logic follows:
 if __name__ == '__main__':
+    # Process arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
+    args = parser.parse_args()
+ 
     # Create NeoPixel object with appropriate configuration.
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     # Intialize the library (must be called once before other functions).
     strip.begin()
+ 
+    print ('Press Ctrl-C to quit.')
+    if not args.clear:
+        print('Use "-c" argument to clear LEDs on exit')
  
     try:
  
