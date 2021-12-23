@@ -3,13 +3,22 @@
 ''' Description: Calibration of daylight simulated to time entered. 
         Time entered must be in 24-hour standard (EST).    
 '''
-from datetime import datetime
-import pytz
+from datetime import tzinfo, timedelta, datetime
 
-tz_NY = pytz.timezone('America/New_York') 
-datetime_NY = datetime.now(tz_NY)
-print("NY time:", datetime_NY.strftime("%H:%M:%S"))
+class FixedOffset(tzinfo):
+    def __init__(self, offset):
+        self.__offset = timedelta(hours=offset)
+        self.__dst = timedelta(hours=offset-1)
+        self.__name = ''
 
-tz_London = pytz.timezone('Europe/London')
-datetime_London = datetime.now(tz_London)
-print("London time:", datetime_London.strftime("%H:%M:%S"))
+    def utcoffset(self, dt):
+        return self.__offset
+
+    def tzname(self, dt):
+        return self.__name
+
+    def dst(self, dt):
+        return self.__dst
+
+print datetime.now()
+print datetime.now(FixedOffset(9))
