@@ -20,5 +20,7 @@ class FixedOffset(tzinfo):
     def dst(self, dt):
         return self.__dst
 
-print datetime.now()
-print datetime.now(FixedOffset(9))
+alarm = datetime.now()
+alarm = alarm.replace(hour = 7, minute = 30)
+dd = datetime.now(FixedOffset(-5))
+print(str(dd.hour) + ":" + str(dd.minute) + ":" + str(dd.second))
