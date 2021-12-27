@@ -73,7 +73,7 @@ if __name__ == '__main__':
     tL = -20
     tH = 20
 
-    delay = 0.1
+    delay = 0.26
 
     colors = [Color(0,0,0)] * LED_COUNT
     pulse_width = 4
