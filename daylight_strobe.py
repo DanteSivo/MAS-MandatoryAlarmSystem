@@ -3,6 +3,7 @@ from rpi_ws281x import *
 import RPi.GPIO as GPIO
 import math
 import random
+from datetime import datetime, timedelta, tzinfo
 
 LED_COUNT       = 200
 LED_PIN         = 12
@@ -16,6 +17,10 @@ CONTROLLER_PIN = 26
 RELAY_PIN = 33
 BUTTON_PIN = 11
 
+class FixedOffset(tzinfo):
+    def __init__(self, offset):
+        self.__offset = timedelta(hours = offset)
+        self.__dst = timedelta(hours = offset-1)
 
 def clearStrip():
     for i in range(0, strip.numPixels()):
@@ -80,29 +85,43 @@ if __name__ == '__main__':
 
     clearStrip()
 
-    while True:
-        cR = R - random.randint(tL,tH)
-        cG = G - random.randint(tL,tH)
-        cB = B - random.randint(tL,tH)
-        if (cR > 255):
-            cR = 255
-        elif (cR < 0):
-            cR = abs(cR)
+    alarmHour = 21
+    alarmMinute = 10
 
-        if (cG > 255):
-            cG = 255
-        elif (cG < 0):
-            cG = abs(cG)
+    alarmTime = datetime.now()
+    alarmTime = alarmTime.replace(hour = alarmHour, minute = alarmMinute)
 
-        if (cB > 255):
-            cB = 255
-        elif (cB < 0):
-            cB = abs(cB)
+    while True: # System Loop
+        # Only disable LED loop if alarm is current
+        time.sleep(1)
+        
+        print("D" + str(datetime.now(FixedOffset(-5)).hour) + ":" + str(datetime.now(FixedOffset(-5)).minute))
+        print("A" + str(alarmTime.hour) + ":" + str(alarmTime.minute))
+        
+        if (datetime.now().hour == alarmTime.hour and datetime.now().minute == alarmTime.minute):
+            while True: # LED loop
+                cR = R - random.randint(tL,tH)
+                cG = G - random.randint(tL,tH)
+                cB = B - random.randint(tL,tH)
+                if (cR > 255):
+                    cR = 255
+                elif (cR < 0):
+                    cR = abs(cR)
 
-        print (str(cR) + ":" + str(cG) + ":" + str(cB))
-        colors = shift_right(colors, pulse_width)
-        for i in range(0, pulse_width):
-            colors[i] = Color(cR, cG, cB)
-       
-        setStripRGB(colors)
-        time.sleep(delay)
+                if (cG > 255):
+                    cG = 255
+                elif (cG < 0):
+                    cG = abs(cG)
+
+                if (cB > 255):
+                    cB = 255
+                elif (cB < 0):
+                    cB = abs(cB)
+
+                print (str(cR) + ":" + str(cG) + ":" + str(cB))
+                colors = shift_right(colors, pulse_width)
+                for i in range(0, pulse_width):
+                    colors[i] = Color(cR, cG, cB)
+               
+                setStripRGB(colors)
+                time.sleep(delay)
