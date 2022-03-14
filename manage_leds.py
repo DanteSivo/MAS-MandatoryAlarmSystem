@@ -11,7 +11,7 @@ import argparse
 import RPi.GPIO as GPIO
  
 # LED strip configuration:
-LED_COUNT      = 200      # Number of LED pixels.
+LED_COUNT      = 295 # Number of LED pixels.
 LED_PIN        = 12      # GPIO pin connected to the pixels (18 uses PWM!).
 #LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -23,7 +23,7 @@ CONTROLLER_PIN    = 6
 RELAY_PIN = 13 
  
 # Define functions which animate LEDs in various ways.
-def colorWipe(strip, color, wait_ms=50):
+def colorWipe(strip, color, wait_ms=15):
     """Wipe color across display a pixel at a time."""
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
@@ -108,8 +108,8 @@ if __name__ == '__main__':
     try:
         while True:
             print ('Color wipe animations.')
-            GPIO.output(RELAY_PIN, GPIO.HIGH)
-            colorWipe(strip, Color(255, 0, 0))  # Red wipe
+            GPIO.output(RELAY_PIN, GPIO.LOW)
+            colorWipe(strip, Color(255, 0, 0), 20)  # Red wipe
             colorWipe(strip, Color(0, 255, 0))  # Blue wipe
             colorWipe(strip, Color(0, 0, 255))  # Green wipe
             clearStrip();
@@ -120,7 +120,7 @@ if __name__ == '__main__':
              # i = 0
                 # print(GPIO.input(CONTROLLER_PIN))
             # once pin is no longer high. Trigger relay.
-            GPIO.output(RELAY_PIN, GPIO.LOW)
+            GPIO.output(RELAY_PIN, GPIO.HIGH)
             time.sleep(10)
             theaterChase(strip, Color(127, 127, 127))  # White theater chase
             theaterChase(strip, Color(127,   0,   0))  # Red theater chase

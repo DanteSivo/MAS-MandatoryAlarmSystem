@@ -5,7 +5,7 @@ import math
 import random
 from datetime import datetime, timedelta, tzinfo
 
-LED_COUNT       = 200
+LED_COUNT       = 300
 LED_PIN         = 12
 LED_FREQ_HZ     = 800000
 LED_DMA         = 10
@@ -15,7 +15,7 @@ LED_CHANNEL = 0
 
 CONTROLLER_PIN = 26
 RELAY_PIN = 33
-BUTTON_PIN = 11
+BUTTON_PIN = 12
 
 class FixedOffset(tzinfo):
     def __init__(self, offset):
@@ -99,58 +99,69 @@ if __name__ == '__main__':
 
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(RELAY_PIN, GPIO.OUT)
-    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+  
+    GPIO.output(RELAY_PIN, GPIO.LOW)
+    for i in range(0, strip.numPixels()):
+        strip.setPixelColor(i, Color(100,0,0))
+        strip.show()
+        time.sleep(0.015)
 
     clearStrip()
-
+    GPIO.output(RELAY_PIN, GPIO.HIGH)
     c = 0
 
-    GPIO.output(RELAY_PIN,GPIO.LOW) # Enable RaspPi control
+    GPIO.output(RELAY_PIN,GPIO.HIGH) # Enable remote  control
 
-    R = 240
-    G = 240
-    B = 50
+    R = 200
+    G = 150
+    B = 150
 
-    tL = -20
-    tH = 20
+    tL = -50
+    tH = 50
 
-    delay = 0.26
+    delay = 0.1
 
     colors = [Color(0,0,0)] * LED_COUNT
     pulse_width = 4
 
     clearStrip()
+    
+    lim = 255
 
-    alarmHour = 21
-    alarmMinute = 10
+    alarmHour = 7
+    alarmMinute = 30
 
     alarmTime = datetime.now()
     alarmTime = alarmTime.replace(hour = alarmHour, minute = alarmMinute)
-
+    
     while True: # System Loop
         # Only disable LED loop if alarm is current
         time.sleep(1)
-        
-        print("D" + str(datetime.now(FixedOffset(-5)).hour) + ":" + str(datetime.now(FixedOffset(-5)).minute))
-        print("A" + str(alarmTime.hour) + ":" + str(alarmTime.minute))
-        
-        if (datetime.now().hour == alarmTime.hour and datetime.now().minute == alarmTime.minute):
-            while True: # LED loop
+        #print(GPIO.input(BUTTON_PIN))    
+        #print("D" + str(datetime.now(FixedOffset(-4)).hour) + ":" + str(datetime.now(FixedOffset(-4)).minute))
+        #print("A" + str(alarmTime.hour) + ":" + str(alarmTime.minute))
+    
+        if (datetime.now(FixedOffset(-4)).hour == alarmTime.hour and datetime.now(FixedOffset(-4)).minute == alarmTime.minute):
+            GPIO.output(RELAY_PIN, GPIO.LOW)
+            print("Alarm!")
+            for i in range(0, 11000): # LED loop
+                print(i)
                 cR = R - random.randint(tL,tH)
                 cG = G - random.randint(tL,tH)
                 cB = B - random.randint(tL,tH)
-                if (cR > 255):
-                    cR = 255
+                if (cR > lim):
+                    cR = lim
                 elif (cR < 0):
                     cR = abs(cR)
 
-                if (cG > 255):
-                    cG = 255
+                if (cG > lim):
+                    cG = lim
                 elif (cG < 0):
                     cG = abs(cG)
 
-                if (cB > 255):
-                    cB = 255
+                if (cB > lim):
+                    cB = lim
                 elif (cB < 0):
                     cB = abs(cB)
 
@@ -161,3 +172,6 @@ if __name__ == '__main__':
                
                 setStripRGB(colors)
                 time.sleep(delay)
+            print("Snooze")
+            GPIO.output(RELAY_PIN, GPIO.HIGH)
+            #time.sleep(60) # Wait one minute to prevent re-trigger
